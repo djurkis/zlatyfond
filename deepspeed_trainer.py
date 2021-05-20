@@ -25,10 +25,11 @@ class MyModel(pl.LightningModule):
         self.ln_f = nn.LayerNorm(cfg.emb_d)
         self.head = nn.Linear(cfg.emb_d, cfg.vocab, bias=False)
         self.block_size = cfg.block_size
-#        self.blocks = nn.ModuleList([Block(cfg) for _ in range(cfg.n_layers)])
+        #        self.blocks = nn.ModuleList([Block(cfg) for _ in range(cfg.n_layers)])
         self.blocks = nn.Sequential(*[Block(cfg) for _ in range(cfg.n_layers)])
-#    def configure_sharded_model(self):
-#        self.blocks = nn.ModuleList([Block(cfg) for _ in range(cfg.n_layers)])
+
+    #    def configure_sharded_model(self):
+    #        self.blocks = nn.ModuleList([Block(cfg) for _ in range(cfg.n_layers)])
 
     def configure_optimizers(self):
         return DeepSpeedCPUAdam(self.parameters())
@@ -42,8 +43,8 @@ class MyModel(pl.LightningModule):
         # add and drop pos embs
         x = self.drop(token_embeddings + self.pos_emb[:, :t, :])
 
-#        for block in self.blocks:
-#            x = deepspeed.checkpointing.checkpoint(block, x)
+        #        for block in self.blocks:
+        #            x = deepspeed.checkpointing.checkpoint(block, x)
 
         x = self.blocks(x)
 
@@ -61,10 +62,10 @@ class MyModel(pl.LightningModule):
 
 
 parser = ArgumentParser()
-parser.add_argument('--gpus',type=int)
-parser.add_argument('--sp_model')
-parser.add_argument('--data_path')
-parser.add_argument('--batch_size',default=32,type=int)
+parser.add_argument("--gpus", type=int)
+parser.add_argument("--sp_model")
+parser.add_argument("--data_path")
+parser.add_argument("--batch_size", default=32, type=int)
 args = parser.parse_args()
 
 
@@ -79,4 +80,4 @@ trainer = Trainer(
     plugins="deepspeed_stage_2_offload",
     precision=16,
 )
-trainer.fit(model,train_loader)
+trainer.fit(model, train_loader)

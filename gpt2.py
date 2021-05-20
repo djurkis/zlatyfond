@@ -22,16 +22,11 @@ class Config:
     num_h = 4
     emb_drop = 0.1
     n_layers = 10
+
     def __init__(self, **kwargs):
 
         for k, v in kwargs.items():
             setattr(self, k, v)
-
-
-
-
-
-
 
 
 class CausalSelfAttention(nn.Module):
