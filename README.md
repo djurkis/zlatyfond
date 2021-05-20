@@ -1,6 +1,6 @@
 # zlatyfond
 
-How well can overparametrized transformers able to model the Classics of Slovak literature?
+How are overparametrized transformers able to model the Classics of Slovak literature?
 
 
 
