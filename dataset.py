@@ -18,7 +18,7 @@ class MyDataset2(Dataset):
             self.data = f.read()
         self.sp = spm.SentencePieceProcessor(model_file=model)
         
-        encode = self.sp.encode(out_type=int)
+        encode = partial(self.sp.encode,out_type=int)
         # TODO: fix memory inefficiency for large textfiles
         with multiprocessing.Pool(sp_workers) as p:
             codes = p.imap(encode,self.data.split('\n'))
