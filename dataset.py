@@ -8,14 +8,23 @@ import numpy as np
 import torch
 from toolz.itertoolz import concat
 
+from functools import partial
+from multiprocessing import Pool 
+
+
 class MyDataset2(Dataset):
-    def __init__(self,path,model,context_len=128):
+    def __init__(self,path,model,context_len=128,sp_workers=4):
         with open(path,'r') as f:
             self.data = f.read()
         self.sp = spm.SentencePieceProcessor(model_file=model)
         
-        self.encoded = np.array(list(concat(self.sp.encode(self.data.split('\n'),out_type=int))))
+        encode = self.sp.encode(out_type=int)
+        # TODO: fix memory inefficiency for large textfiles
+        with multiprocessing.Pool(sp_workers) as p:
+            codes = p.imap(encode,self.data.split('\n'))
+        self.encoded = np.array(codes)    
         self.context_len = context_len
+    
     def __len__(self):
         return len(self.encoded) - self.context_len -1
 
